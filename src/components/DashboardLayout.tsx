@@ -108,11 +108,16 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
             <div className="text-sm font-medium text-sidebar-foreground truncate">{user?.email}</div>
             <div className="text-[10px] uppercase tracking-wide text-sidebar-primary mt-1">{role}</div>
           </div>
+          <Button variant="ghost" className="w-full justify-start text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground" onClick={() => setPwdOpen(true)}>
+            <KeyRound className="h-4 w-4 mr-2" /> Change password
+          </Button>
           <Button variant="ghost" className="w-full justify-start text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground" onClick={handleLogout}>
             <LogOut className="h-4 w-4 mr-2" /> Sign out
           </Button>
         </div>
       </aside>
+
+      <ChangePasswordDialog open={pwdOpen} onOpenChange={setPwdOpen} />
 
       {/* Backdrop */}
       {open && <div onClick={() => setOpen(false)} className="lg:hidden fixed inset-0 z-20 bg-foreground/40 backdrop-blur-sm" />}

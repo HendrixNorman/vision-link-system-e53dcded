@@ -35,23 +35,6 @@ export default function Login() {
     toast.success("Welcome back!");
   };
 
-  const handleSeedAdmin = async () => {
-    setSeeding(true);
-    const { data, error } = await supabase.functions.invoke("seed-admin");
-    setSeeding(false);
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-    if (data?.already) {
-      toast.info("Admin already exists. Use admin@doublevision.school");
-    } else {
-      toast.success("Admin created! Email: admin@doublevision.school / Password: DoubleVision@2025");
-      setEmail("admin@doublevision.school");
-      setPassword("DoubleVision@2025");
-    }
-  };
-
   return (
     <div className="min-h-screen grid lg:grid-cols-2 bg-background">
       {/* Left brand panel */}

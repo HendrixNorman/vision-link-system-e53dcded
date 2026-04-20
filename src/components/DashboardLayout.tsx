@@ -40,6 +40,7 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
   const role = primaryRole(roles);
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [pwdOpen, setPwdOpen] = useState(false);
 
   const items = role ? navByRole[role] : [];
 

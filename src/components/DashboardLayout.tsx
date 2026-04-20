@@ -20,6 +20,7 @@ const navByRole: Record<AppRole, NavItem[]> = {
     { to: "/teacher", label: "Overview", icon: LayoutDashboard },
     { to: "/teacher/students", label: "Students", icon: GraduationCap },
     { to: "/teacher/results", label: "Enter Results", icon: FileText },
+    { to: "/teacher/announcements", label: "Announcements", icon: Megaphone },
   ],
   student: [
     { to: "/student", label: "My Dashboard", icon: LayoutDashboard },

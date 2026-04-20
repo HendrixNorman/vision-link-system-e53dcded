@@ -144,6 +144,30 @@ export type Database = {
           },
         ]
       }
+      site_settings: {
+        Row: {
+          hero_url: string | null
+          id: string
+          logo_url: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          hero_url?: string | null
+          id?: string
+          logo_url?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          hero_url?: string | null
+          id?: string
+          logo_url?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       students: {
         Row: {
           admission_no: string

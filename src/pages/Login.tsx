@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth, primaryRole, dashboardPathFor } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { SchoolLogo } from "@/components/SchoolLogo";
 import { toast } from "sonner";
-import { Loader2, ArrowLeft, KeyRound } from "lucide-react";
+import { Loader2, ArrowLeft } from "lucide-react";
 
 export default function Login() {
   const { signIn, user, roles, loading } = useAuth();
@@ -34,23 +33,6 @@ export default function Login() {
       return;
     }
     toast.success("Welcome back!");
-  };
-
-  const handleSeedAdmin = async () => {
-    setSeeding(true);
-    const { data, error } = await supabase.functions.invoke("seed-admin");
-    setSeeding(false);
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-    if (data?.already) {
-      toast.info("Admin already exists. Use admin@doublevision.school");
-    } else {
-      toast.success("Admin created! Email: admin@doublevision.school / Password: DoubleVision@2025");
-      setEmail("admin@doublevision.school");
-      setPassword("DoubleVision@2025");
-    }
   };
 
   return (
@@ -102,13 +84,6 @@ export default function Login() {
                 </Button>
               </form>
 
-              <div className="mt-6 pt-6 border-t border-border/60">
-                <p className="text-xs text-muted-foreground mb-3">First time setup? Initialize the default admin account:</p>
-                <Button type="button" variant="outline" className="w-full" onClick={handleSeedAdmin} disabled={seeding}>
-                  {seeding ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <KeyRound className="mr-2 h-4 w-4" />}
-                  Create default admin
-                </Button>
-              </div>
             </CardContent>
           </Card>
         </div>

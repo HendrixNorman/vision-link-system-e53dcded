@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth, primaryRole, dashboardPathFor } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { SchoolLogo } from "@/components/SchoolLogo";
 import { toast } from "sonner";
-import { Loader2, ArrowLeft, KeyRound } from "lucide-react";
+import { Loader2, ArrowLeft } from "lucide-react";
 
 export default function Login() {
   const { signIn, user, roles, loading } = useAuth();

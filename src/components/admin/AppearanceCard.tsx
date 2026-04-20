@@ -37,9 +37,10 @@ export function AppearanceCard() {
       const publicUrl = pub.publicUrl;
 
       if (!settings?.id) throw new Error("Site settings row missing");
+      const patch = field === "logo_url" ? { logo_url: publicUrl } : { hero_url: publicUrl };
       const { error: updErr } = await supabase
         .from("site_settings")
-        .update({ [field]: publicUrl })
+        .update(patch)
         .eq("id", settings.id);
       if (updErr) throw updErr;
 

@@ -102,13 +102,6 @@ export default function Login() {
                 </Button>
               </form>
 
-              <div className="mt-6 pt-6 border-t border-border/60">
-                <p className="text-xs text-muted-foreground mb-3">First time setup? Initialize the default admin account:</p>
-                <Button type="button" variant="outline" className="w-full" onClick={handleSeedAdmin} disabled={seeding}>
-                  {seeding ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <KeyRound className="mr-2 h-4 w-4" />}
-                  Create default admin
-                </Button>
-              </div>
             </CardContent>
           </Card>
         </div>

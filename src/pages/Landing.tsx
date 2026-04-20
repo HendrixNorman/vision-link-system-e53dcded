@@ -4,6 +4,7 @@ import { SchoolLogo } from "@/components/SchoolLogo";
 import { Card, CardContent } from "@/components/ui/card";
 import { ShieldCheck, Megaphone, FileText, Users, ArrowRight, Sparkles, GraduationCap } from "lucide-react";
 import heroImg from "@/assets/hero-school.jpg";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const features = [
   { icon: FileText, title: "Online Results Access", desc: "Students and parents view term results securely, anytime." },
@@ -13,6 +14,8 @@ const features = [
 ];
 
 export default function Landing() {
+  const { settings } = useSiteSettings();
+  const hero = settings?.hero_url || heroImg;
   return (
     <div className="min-h-screen bg-background">
       {/* Nav */}
@@ -61,7 +64,7 @@ export default function Landing() {
           <div className="relative animate-fade-in-slow">
             <div className="absolute -inset-4 gradient-hero rounded-3xl opacity-20 blur-2xl" />
             <img
-              src={heroImg}
+              src={hero}
               alt="Double Vision High School students in green and cream uniforms"
               width={1600}
               height={1024}

@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { Users, GraduationCap, FileText, Megaphone } from "lucide-react";
 import { Link } from "react-router-dom";
+import { AppearanceCard } from "@/components/admin/AppearanceCard";
 
 export default function AdminOverview() {
   const [stats, setStats] = useState({ users: 0, students: 0, results: 0, announcements: 0 });
@@ -84,6 +85,10 @@ export default function AdminOverview() {
             )}
           </CardContent>
         </Card>
+      </div>
+
+      <div className="mt-6">
+        <AppearanceCard />
       </div>
     </DashboardLayout>
   );

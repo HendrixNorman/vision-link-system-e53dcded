@@ -3,8 +3,9 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth, AppRole, primaryRole } from "@/contexts/AuthContext";
 import { SchoolLogo } from "./SchoolLogo";
 import { Button } from "@/components/ui/button";
-import { LogOut, Menu, X, LayoutDashboard, Users, GraduationCap, Megaphone, FileText, BookOpen, Baby } from "lucide-react";
+import { LogOut, Menu, X, LayoutDashboard, Users, GraduationCap, Megaphone, FileText, BookOpen, Baby, KeyRound } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ChangePasswordDialog } from "./ChangePasswordDialog";
 
 interface NavItem { to: string; label: string; icon: React.ComponentType<{ className?: string }>; }
 

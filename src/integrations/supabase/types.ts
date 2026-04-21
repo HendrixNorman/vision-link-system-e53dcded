@@ -97,6 +97,62 @@ export type Database = {
         }
         Relationships: []
       }
+      result_sheets: {
+        Row: {
+          confirmed_at: string | null
+          confirmed_by: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          remarks: string | null
+          status: Database["public"]["Enums"]["result_sheet_status"]
+          student_id: string
+          submitted_at: string | null
+          submitted_by: string | null
+          term: string
+          updated_at: string
+          year: number
+        }
+        Insert: {
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          remarks?: string | null
+          status?: Database["public"]["Enums"]["result_sheet_status"]
+          student_id: string
+          submitted_at?: string | null
+          submitted_by?: string | null
+          term: string
+          updated_at?: string
+          year: number
+        }
+        Update: {
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          remarks?: string | null
+          status?: Database["public"]["Enums"]["result_sheet_status"]
+          student_id?: string
+          submitted_at?: string | null
+          submitted_by?: string | null
+          term?: string
+          updated_at?: string
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "result_sheets_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       results: {
         Row: {
           created_at: string
@@ -104,11 +160,10 @@ export type Database = {
           id: string
           remarks: string | null
           score: number
+          sheet_id: string
           student_id: string
           subject: string
-          term: string
           updated_at: string
-          year: number
         }
         Insert: {
           created_at?: string
@@ -116,11 +171,10 @@ export type Database = {
           id?: string
           remarks?: string | null
           score: number
+          sheet_id: string
           student_id: string
           subject: string
-          term: string
           updated_at?: string
-          year: number
         }
         Update: {
           created_at?: string
@@ -128,13 +182,19 @@ export type Database = {
           id?: string
           remarks?: string | null
           score?: number
+          sheet_id?: string
           student_id?: string
           subject?: string
-          term?: string
           updated_at?: string
-          year?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "results_sheet_id_fkey"
+            columns: ["sheet_id"]
+            isOneToOne: false
+            referencedRelation: "result_sheets"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "results_student_id_fkey"
             columns: ["student_id"]
@@ -167,6 +227,35 @@ export type Database = {
           updated_by?: string | null
         }
         Relationships: []
+      }
+      student_subjects: {
+        Row: {
+          created_at: string
+          id: string
+          student_id: string
+          subject: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          student_id: string
+          subject: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          student_id?: string
+          subject?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_subjects_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       students: {
         Row: {
@@ -239,6 +328,7 @@ export type Database = {
     Enums: {
       announcement_target: "all" | "parents" | "teachers" | "students" | "user"
       app_role: "admin" | "teacher" | "student" | "parent"
+      result_sheet_status: "draft" | "submitted" | "confirmed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -368,6 +458,7 @@ export const Constants = {
     Enums: {
       announcement_target: ["all", "parents", "teachers", "students", "user"],
       app_role: ["admin", "teacher", "student", "parent"],
+      result_sheet_status: ["draft", "submitted", "confirmed"],
     },
   },
 } as const

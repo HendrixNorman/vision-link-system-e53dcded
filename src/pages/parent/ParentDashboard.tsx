@@ -22,7 +22,11 @@ export default function ParentDashboard() {
 
       if (kids.length) {
         const ids = kids.map((k: any) => k.id);
-        const { count } = await supabase.from("results").select("id", { count: "exact", head: true }).in("student_id", ids);
+        const { count } = await supabase
+          .from("result_sheets")
+          .select("id", { count: "exact", head: true })
+          .in("student_id", ids)
+          .eq("status", "confirmed");
         setResultsCount(count ?? 0);
       }
       const { count: ac } = await supabase.from("announcements").select("id", { count: "exact", head: true });
@@ -35,7 +39,7 @@ export default function ParentDashboard() {
       <PageHeader title="Parent dashboard" description="View your children's progress and school announcements." />
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         <StatCard icon={Baby} label="My children" value={children.length} />
-        <StatCard icon={FileText} label="Results entries" value={resultsCount} />
+        <StatCard icon={FileText} label="Confirmed result sheets" value={resultsCount} />
         <StatCard icon={Megaphone} label="Announcements" value={announcementsCount} />
       </div>
 

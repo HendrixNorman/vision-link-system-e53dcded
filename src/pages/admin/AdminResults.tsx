@@ -72,11 +72,11 @@ export default function AdminResults() {
   const handleCreate = async () => {
     if (!studentId) { toast.error("Pick a student"); return; }
     setCreating(true);
-    // verify 9 subjects
     const { data: subs } = await supabase.from("student_subjects").select("subject").eq("student_id", studentId);
-    if (!subs || subs.length !== 9) {
+    const count = subs?.length ?? 0;
+    if (count < 7 || count > 9) {
       setCreating(false);
-      toast.error("Student must have exactly 9 subjects assigned first (Students page).");
+      toast.error(`Student must have between 7 and 9 subjects assigned first (currently ${count}). Fix on the Students page.`);
       return;
     }
     const { error } = await supabase.from("result_sheets").insert({
@@ -179,7 +179,7 @@ export default function AdminResults() {
     <DashboardLayout>
       <PageHeader
         title="Results"
-        description="One sheet per student per term — fill all 9 subject scores, submit, then admin confirms to publish."
+        description="One sheet per student per term — fill all 7–9 subject scores, submit, then admin confirms to publish."
         action={
           <Button onClick={() => setCreateOpen(true)}><Plus className="h-4 w-4 mr-2" /> New result sheet</Button>
         }

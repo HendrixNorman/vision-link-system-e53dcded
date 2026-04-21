@@ -17,8 +17,20 @@ export default function ParentChildren() {
       const { data: links } = await supabase.from("parent_students").select("students(*)").eq("parent_user_id", user.id);
       const kids = (links ?? []).map((l: any) => l.students).filter(Boolean);
       const enriched = await Promise.all(kids.map(async (s: any) => {
-        const { data: r } = await supabase.from("results").select("*").eq("student_id", s.id).order("year", { ascending: false }).order("term");
-        return { student: s, results: r ?? [] };
+        const { data: sheets } = await supabase
+          .from("result_sheets")
+          .select("term, year, remarks, results(id, subject, score)")
+          .eq("student_id", s.id)
+          .eq("status", "confirmed")
+          .order("year", { ascending: false })
+          .order("term");
+        const flat: any[] = [];
+        (sheets ?? []).forEach((sh: any) => {
+          (sh.results ?? []).forEach((r: any) =>
+            flat.push({ ...r, term: sh.term, year: sh.year, remarks: sh.remarks })
+          );
+        });
+        return { student: s, results: flat };
       }));
       setData(enriched);
       setLoading(false);

@@ -18,8 +18,18 @@ export default function StudentDashboard() {
       const { data: s } = await supabase.from("students").select("*").eq("user_id", user.id).maybeSingle();
       setStudent(s);
       if (s) {
-        const { data: r } = await supabase.from("results").select("*").eq("student_id", s.id).order("created_at", { ascending: false });
-        setResults(r ?? []);
+        const { data: sheets } = await supabase
+          .from("result_sheets")
+          .select("term, year, results(id, subject, score)")
+          .eq("student_id", s.id)
+          .eq("status", "confirmed")
+          .order("year", { ascending: false })
+          .order("term");
+        const flat: any[] = [];
+        (sheets ?? []).forEach((sh: any) => {
+          (sh.results ?? []).forEach((r: any) => flat.push({ ...r, term: sh.term, year: sh.year }));
+        });
+        setResults(flat);
       }
       const { data: a } = await supabase.from("announcements").select("*").order("created_at", { ascending: false }).limit(5);
       setAnnouncements(a ?? []);

@@ -294,13 +294,13 @@ export default function AdminResults() {
               {editor?.students?.full_name} — {editor?.term} {editor?.year}
             </DialogTitle>
           </DialogHeader>
-          {editorSubjects.length !== 9 ? (
+          {editorSubjects.length < 7 || editorSubjects.length > 9 ? (
             <p className="text-sm text-destructive">
-              This student does not have exactly 9 subjects assigned. Fix it on the Students page first.
+              This student does not have between 7 and 9 subjects assigned. Fix it on the Students page first.
             </p>
           ) : (
             <div className="space-y-3">
-              <p className="text-xs text-muted-foreground">Enter a score (0–100) for each of the 9 subjects.</p>
+              <p className="text-xs text-muted-foreground">Enter a score (0–100) for each of the {editorSubjects.length} subjects.</p>
               <div className="grid sm:grid-cols-2 gap-3">
                 {editorRows.map((row, i) => (
                   <div key={row.subject} className="space-y-1">

@@ -52,9 +52,6 @@ export default function Landing() {
               <Button asChild size="lg" className="shadow-elegant">
                 <Link to="/login">Sign in to your portal <ArrowRight className="ml-2 h-4 w-4" /></Link>
               </Button>
-              <Button asChild size="lg" variant="outline">
-                <a href="mailto:admin@doublevision.school?subject=Demo%20request">Request a demo</a>
-              </Button>
             </div>
             <div className="mt-8 flex items-center gap-6 text-sm text-muted-foreground">
               <div className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" /> Bank-grade security</div>
@@ -110,9 +107,6 @@ export default function Landing() {
             <div className="mt-7 flex flex-wrap justify-center gap-3">
               <Button asChild size="lg" variant="secondary">
                 <Link to="/login">Sign in</Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="bg-transparent border-primary-foreground/40 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground">
-                <a href="mailto:admin@doublevision.school?subject=Demo%20request">Request a demo</a>
               </Button>
             </div>
           </div>

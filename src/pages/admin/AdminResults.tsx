@@ -324,10 +324,10 @@ export default function AdminResults() {
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditor(null)}>Close</Button>
-            <Button variant="secondary" onClick={() => saveScores(false)} disabled={savingEditor || editorSubjects.length !== 9}>
+            <Button variant="secondary" onClick={() => saveScores(false)} disabled={savingEditor || editorSubjects.length < 7 || editorSubjects.length > 9}>
               {savingEditor && <Loader2 className="h-4 w-4 mr-2 animate-spin" />} Save draft
             </Button>
-            <Button onClick={() => saveScores(true)} disabled={savingEditor || editorSubjects.length !== 9}>
+            <Button onClick={() => saveScores(true)} disabled={savingEditor || editorSubjects.length < 7 || editorSubjects.length > 9}>
               <Send className="h-4 w-4 mr-2" /> Submit
             </Button>
           </DialogFooter>

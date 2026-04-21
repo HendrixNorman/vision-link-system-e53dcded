@@ -61,8 +61,8 @@ export default function AdminStudents() {
 
   const saveSubjects = async () => {
     if (!editing) return;
-    if (draftSubjects.length !== 9) {
-      toast.error(`Please assign exactly 9 subjects (currently ${draftSubjects.length}).`);
+    if (draftSubjects.length < 7 || draftSubjects.length > 9) {
+      toast.error(`Please assign between 7 and 9 subjects (currently ${draftSubjects.length}).`);
       return;
     }
     setSaving(true);
@@ -81,7 +81,7 @@ export default function AdminStudents() {
     <DashboardLayout>
       <PageHeader
         title="Students"
-        description="All enrolled students. Assign each student exactly 9 subjects before uploading results."
+        description="All enrolled students. Assign each student between 7 and 9 subjects before uploading results."
       />
       <Card className="shadow-soft">
         <CardContent className="p-0">
@@ -113,7 +113,7 @@ export default function AdminStudents() {
                         <td className="p-4 font-medium">{s.full_name}</td>
                         <td className="p-4 text-muted-foreground">{s.class_name}</td>
                         <td className="p-4">
-                          <Badge variant={count === 9 ? "default" : "secondary"}>{count} / 9</Badge>
+                          <Badge variant={count >= 7 && count <= 9 ? "default" : "secondary"}>{count} / 7–9</Badge>
                         </td>
                         <td className="p-4 text-right">
                           <Button size="sm" variant="outline" onClick={() => openEditor(s)}>
@@ -137,7 +137,7 @@ export default function AdminStudents() {
           </DialogHeader>
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Assign exactly 9 subjects. Results can only be submitted once these are set.
+              Assign between 7 and 9 subjects. Results can only be submitted once these are set.
             </p>
             <div className="flex gap-2">
               <Input
@@ -149,7 +149,7 @@ export default function AdminStudents() {
               <Button type="button" onClick={addSubject} disabled={draftSubjects.length >= 9}>Add</Button>
             </div>
             <div className="space-y-2">
-              <Label className="text-xs text-muted-foreground">{draftSubjects.length} / 9 subjects</Label>
+              <Label className="text-xs text-muted-foreground">{draftSubjects.length} / 7–9 subjects</Label>
               {draftSubjects.length === 0 ? (
                 <p className="text-sm text-muted-foreground italic">No subjects yet.</p>
               ) : (
@@ -168,7 +168,7 @@ export default function AdminStudents() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditing(null)}>Cancel</Button>
-            <Button onClick={saveSubjects} disabled={saving || draftSubjects.length !== 9}>
+            <Button onClick={saveSubjects} disabled={saving || draftSubjects.length < 7 || draftSubjects.length > 9}>
               {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />} Save subjects
             </Button>
           </DialogFooter>

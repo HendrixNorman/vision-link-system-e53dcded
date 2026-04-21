@@ -72,11 +72,11 @@ export default function AdminResults() {
   const handleCreate = async () => {
     if (!studentId) { toast.error("Pick a student"); return; }
     setCreating(true);
-    // verify 9 subjects
     const { data: subs } = await supabase.from("student_subjects").select("subject").eq("student_id", studentId);
-    if (!subs || subs.length !== 9) {
+    const count = subs?.length ?? 0;
+    if (count < 7 || count > 9) {
       setCreating(false);
-      toast.error("Student must have exactly 9 subjects assigned first (Students page).");
+      toast.error(`Student must have between 7 and 9 subjects assigned first (currently ${count}). Fix on the Students page.`);
       return;
     }
     const { error } = await supabase.from("result_sheets").insert({
@@ -179,7 +179,7 @@ export default function AdminResults() {
     <DashboardLayout>
       <PageHeader
         title="Results"
-        description="One sheet per student per term — fill all 9 subject scores, submit, then admin confirms to publish."
+        description="One sheet per student per term — fill all 7–9 subject scores, submit, then admin confirms to publish."
         action={
           <Button onClick={() => setCreateOpen(true)}><Plus className="h-4 w-4 mr-2" /> New result sheet</Button>
         }
@@ -294,13 +294,13 @@ export default function AdminResults() {
               {editor?.students?.full_name} — {editor?.term} {editor?.year}
             </DialogTitle>
           </DialogHeader>
-          {editorSubjects.length !== 9 ? (
+          {editorSubjects.length < 7 || editorSubjects.length > 9 ? (
             <p className="text-sm text-destructive">
-              This student does not have exactly 9 subjects assigned. Fix it on the Students page first.
+              This student does not have between 7 and 9 subjects assigned. Fix it on the Students page first.
             </p>
           ) : (
             <div className="space-y-3">
-              <p className="text-xs text-muted-foreground">Enter a score (0–100) for each of the 9 subjects.</p>
+              <p className="text-xs text-muted-foreground">Enter a score (0–100) for each of the {editorSubjects.length} subjects.</p>
               <div className="grid sm:grid-cols-2 gap-3">
                 {editorRows.map((row, i) => (
                   <div key={row.subject} className="space-y-1">
@@ -324,10 +324,10 @@ export default function AdminResults() {
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditor(null)}>Close</Button>
-            <Button variant="secondary" onClick={() => saveScores(false)} disabled={savingEditor || editorSubjects.length !== 9}>
+            <Button variant="secondary" onClick={() => saveScores(false)} disabled={savingEditor || editorSubjects.length < 7 || editorSubjects.length > 9}>
               {savingEditor && <Loader2 className="h-4 w-4 mr-2 animate-spin" />} Save draft
             </Button>
-            <Button onClick={() => saveScores(true)} disabled={savingEditor || editorSubjects.length !== 9}>
+            <Button onClick={() => saveScores(true)} disabled={savingEditor || editorSubjects.length < 7 || editorSubjects.length > 9}>
               <Send className="h-4 w-4 mr-2" /> Submit
             </Button>
           </DialogFooter>

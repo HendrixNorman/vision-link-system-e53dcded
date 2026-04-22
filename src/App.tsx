@@ -24,6 +24,7 @@ import ParentChildren from "./pages/parent/ParentChildren";
 
 import TeacherDashboard from "./pages/teacher/TeacherDashboard";
 import AnnouncementsList from "./pages/shared/AnnouncementsList";
+import Assignments from "./pages/shared/Assignments";
 
 const queryClient = new QueryClient();
 
@@ -45,22 +46,26 @@ const App = () => (
             <Route path="/admin/students" element={<ProtectedRoute allow={["admin"]}><AdminStudents /></ProtectedRoute>} />
             <Route path="/admin/results" element={<ProtectedRoute allow={["admin"]}><AdminResults /></ProtectedRoute>} />
             <Route path="/admin/announcements" element={<ProtectedRoute allow={["admin"]}><AdminAnnouncements /></ProtectedRoute>} />
+            <Route path="/admin/assignments" element={<ProtectedRoute allow={["admin"]}><Assignments /></ProtectedRoute>} />
 
             {/* Teacher */}
             <Route path="/teacher" element={<ProtectedRoute allow={["teacher", "admin"]}><TeacherDashboard /></ProtectedRoute>} />
             <Route path="/teacher/students" element={<ProtectedRoute allow={["teacher", "admin"]}><AdminStudents /></ProtectedRoute>} />
             <Route path="/teacher/results" element={<ProtectedRoute allow={["teacher", "admin"]}><AdminResults /></ProtectedRoute>} />
             <Route path="/teacher/announcements" element={<ProtectedRoute allow={["teacher", "admin"]}><AnnouncementsList /></ProtectedRoute>} />
+            <Route path="/teacher/assignments" element={<ProtectedRoute allow={["teacher", "admin"]}><Assignments /></ProtectedRoute>} />
 
             {/* Student */}
             <Route path="/student" element={<ProtectedRoute allow={["student"]}><StudentDashboard /></ProtectedRoute>} />
             <Route path="/student/results" element={<ProtectedRoute allow={["student"]}><StudentResults /></ProtectedRoute>} />
             <Route path="/student/announcements" element={<ProtectedRoute allow={["student"]}><AnnouncementsList /></ProtectedRoute>} />
+            <Route path="/student/assignments" element={<ProtectedRoute allow={["student"]}><Assignments /></ProtectedRoute>} />
 
             {/* Parent */}
             <Route path="/parent" element={<ProtectedRoute allow={["parent"]}><ParentDashboard /></ProtectedRoute>} />
             <Route path="/parent/children" element={<ProtectedRoute allow={["parent"]}><ParentChildren /></ProtectedRoute>} />
             <Route path="/parent/announcements" element={<ProtectedRoute allow={["parent"]}><AnnouncementsList /></ProtectedRoute>} />
+            <Route path="/parent/assignments" element={<ProtectedRoute allow={["parent"]}><Assignments /></ProtectedRoute>} />
 
             <Route path="*" element={<NotFound />} />
           </Routes>

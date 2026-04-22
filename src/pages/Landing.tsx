@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { SchoolLogo } from "@/components/SchoolLogo";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { Card, CardContent } from "@/components/ui/card";
 import { ShieldCheck, Megaphone, FileText, Users, ArrowRight, Sparkles, GraduationCap } from "lucide-react";
 import heroImg from "@/assets/hero-school.jpg";
@@ -14,7 +15,7 @@ const features = [
 ];
 
 export default function Landing() {
-  const { settings } = useSiteSettings();
+  const { settings, schoolName } = useSiteSettings();
   const hero = settings?.hero_url || heroImg;
   return (
     <div className="min-h-screen bg-background">
@@ -26,6 +27,7 @@ export default function Landing() {
             <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
               <a href="#features">Features</a>
             </Button>
+            <ThemeToggle />
             <Button asChild size="sm">
               <Link to="/login">Login <ArrowRight className="ml-1 h-4 w-4" /></Link>
             </Button>
@@ -42,7 +44,7 @@ export default function Landing() {
               <Sparkles className="h-3.5 w-3.5" /> Smart School Management
             </div>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-extrabold leading-tight">
-              The modern way to run <span className="text-primary">Double Vision</span> High School.
+              The modern way to run <span className="text-primary">{schoolName}</span>.
             </h1>
             <p className="mt-5 text-lg text-muted-foreground max-w-xl">
               Secure portals for admins, teachers, students and parents. Publish results,
@@ -62,7 +64,7 @@ export default function Landing() {
             <div className="absolute -inset-4 gradient-hero rounded-3xl opacity-20 blur-2xl" />
             <img
               src={hero}
-              alt="Double Vision High School students in green and cream uniforms"
+              alt={`${schoolName} students`}
               width={1600}
               height={1024}
               className="relative rounded-2xl shadow-elegant w-full h-auto object-cover"
@@ -116,7 +118,7 @@ export default function Landing() {
       <footer className="border-t border-border/60 py-8">
         <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-muted-foreground">
           <SchoolLogo />
-          <div>© {new Date().getFullYear()} Double Vision High School. All rights reserved.</div>
+          <div>© {new Date().getFullYear()} {schoolName}. All rights reserved.</div>
         </div>
       </footer>
     </div>

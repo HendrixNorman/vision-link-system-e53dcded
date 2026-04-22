@@ -1,7 +1,9 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Image as ImageIcon, Upload, Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Image as ImageIcon, Upload, Loader2, Save } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
@@ -12,8 +14,36 @@ type Field = "logo_url" | "hero_url";
 export function AppearanceCard() {
   const { settings, refresh } = useSiteSettings();
   const [uploading, setUploading] = useState<Field | null>(null);
+  const [savingName, setSavingName] = useState(false);
+  const [name, setName] = useState("");
   const logoInput = useRef<HTMLInputElement>(null);
   const heroInput = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setName(settings?.school_name ?? "");
+  }, [settings?.school_name]);
+
+  const saveName = async () => {
+    if (!settings?.id) {
+      toast.error("Site settings row missing");
+      return;
+    }
+    setSavingName(true);
+    try {
+      const trimmed = name.trim();
+      const { error } = await supabase
+        .from("site_settings")
+        .update({ school_name: trimmed || null })
+        .eq("id", settings.id);
+      if (error) throw error;
+      toast.success("School name saved");
+      await refresh();
+    } catch (e: any) {
+      toast.error(e.message || "Failed to save");
+    } finally {
+      setSavingName(false);
+    }
+  };
 
   const handleUpload = async (field: Field, file: File) => {
     if (!file.type.startsWith("image/")) {
@@ -63,8 +93,27 @@ export function AppearanceCard() {
           <h3 className="font-display font-semibold text-lg">Appearance</h3>
         </div>
         <p className="text-sm text-muted-foreground mb-5">
-          Update the school logo and landing page hero image.
+          Update your school name, logo, and landing page hero image.
         </p>
+
+        {/* School name */}
+        <div className="mb-6 space-y-2">
+          <Label htmlFor="school-name">School name</Label>
+          <div className="flex gap-2">
+            <Input
+              id="school-name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g. Greenfield High School"
+              maxLength={120}
+            />
+            <Button onClick={saveName} disabled={savingName || name === (settings?.school_name ?? "")}>
+              {savingName ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+              Save
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground">Shown across the portal, landing page, and emails.</p>
+        </div>
 
         <div className="grid sm:grid-cols-2 gap-5">
           {/* Logo */}

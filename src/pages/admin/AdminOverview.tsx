@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Users, GraduationCap, FileText, Megaphone } from "lucide-react";
 import { Link } from "react-router-dom";
 import { AppearanceCard } from "@/components/admin/AppearanceCard";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 export default function AdminOverview() {
   const [stats, setStats] = useState({ users: 0, students: 0, results: 0, announcements: 0 });

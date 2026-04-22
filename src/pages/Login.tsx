@@ -8,9 +8,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { SchoolLogo } from "@/components/SchoolLogo";
 import { toast } from "sonner";
 import { Loader2, ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 export default function Login() {
   const { signIn, user, roles, loading } = useAuth();
+  const { schoolName } = useSiteSettings();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -42,14 +44,14 @@ export default function Login() {
         <SchoolLogo className="text-primary-foreground [&_*]:text-primary-foreground" />
         <div className="text-primary-foreground">
           <h2 className="text-4xl font-display font-bold leading-tight">
-            Welcome back to Double Vision High School
+            Welcome back to {schoolName}
           </h2>
           <p className="mt-4 text-primary-foreground/80 max-w-md">
             Sign in to access your portal — results, announcements and more, all in one secure place.
           </p>
         </div>
         <div className="text-primary-foreground/60 text-sm">
-          © {new Date().getFullYear()} Double Vision High School
+          © {new Date().getFullYear()} {schoolName}
         </div>
       </div>
 

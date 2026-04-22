@@ -9,6 +9,7 @@ import { AppearanceCard } from "@/components/admin/AppearanceCard";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 export default function AdminOverview() {
+  const { schoolName } = useSiteSettings();
   const [stats, setStats] = useState({ users: 0, students: 0, results: 0, announcements: 0 });
   const [recent, setRecent] = useState<{ id: string; title: string; created_at: string }[]>([]);
 
@@ -33,7 +34,7 @@ export default function AdminOverview() {
 
   return (
     <DashboardLayout>
-      <PageHeader title="Admin overview" description="Welcome back. Here's what's happening at Double Vision High School." />
+      <PageHeader title="Admin overview" description={`Welcome back. Here's what's happening at ${schoolName}.`} />
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard icon={Users} label="Total users" value={stats.users} />
         <StatCard icon={GraduationCap} label="Students" value={stats.students} />

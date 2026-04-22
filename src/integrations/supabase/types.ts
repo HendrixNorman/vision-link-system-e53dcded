@@ -44,6 +44,51 @@ export type Database = {
         }
         Relationships: []
       }
+      assignments: {
+        Row: {
+          class_name: string
+          created_at: string
+          created_by: string
+          description: string | null
+          due_date: string | null
+          file_name: string
+          file_path: string
+          file_size: number | null
+          id: string
+          mime_type: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          class_name: string
+          created_at?: string
+          created_by: string
+          description?: string | null
+          due_date?: string | null
+          file_name: string
+          file_path: string
+          file_size?: number | null
+          id?: string
+          mime_type?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          class_name?: string
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          due_date?: string | null
+          file_name?: string
+          file_path?: string
+          file_size?: number | null
+          id?: string
+          mime_type?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       parent_students: {
         Row: {
           created_at: string
@@ -209,6 +254,7 @@ export type Database = {
           hero_url: string | null
           id: string
           logo_url: string | null
+          school_name: string | null
           updated_at: string
           updated_by: string | null
         }
@@ -216,6 +262,7 @@ export type Database = {
           hero_url?: string | null
           id?: string
           logo_url?: string | null
+          school_name?: string | null
           updated_at?: string
           updated_by?: string | null
         }
@@ -223,6 +270,7 @@ export type Database = {
           hero_url?: string | null
           id?: string
           logo_url?: string | null
+          school_name?: string | null
           updated_at?: string
           updated_by?: string | null
         }

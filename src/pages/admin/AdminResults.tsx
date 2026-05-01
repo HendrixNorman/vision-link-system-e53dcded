@@ -61,25 +61,21 @@ export default function AdminResults() {
 
   const load = async () => {
     setLoading(true);
-    const promises: Promise<unknown>[] = [
+    const [{ data: rs }, { data: ss }] = await Promise.all([
       supabase
         .from("result_sheets")
         .select("*, students(full_name, admission_no, class_name)")
         .order("created_at", { ascending: false })
         .limit(200),
       supabase.from("students").select("id, full_name, admission_no").order("full_name"),
-    ];
-    if (isTeacher && user?.id) {
-      promises.push(supabase.from("teacher_subjects").select("subject").eq("teacher_user_id", user.id));
-    }
-    const results = await Promise.all(promises) as Array<{ data: unknown }>;
-    const rs = results[0].data as Sheet[] | null;
-    const ss = results[1].data as { id: string; full_name: string; admission_no: string }[] | null;
-    setSheets(rs ?? []);
+    ]);
+    setSheets((rs ?? []) as Sheet[]);
     setStudents(ss ?? []);
-    if (isTeacher && results[2]) {
-      const ts = results[2].data as { subject: string }[] | null;
+    if (isTeacher && user?.id) {
+      const { data: ts } = await supabase.from("teacher_subjects").select("subject").eq("teacher_user_id", user.id);
       setMyTeacherSubjects((ts ?? []).map((r) => r.subject));
+    } else {
+      setMyTeacherSubjects([]);
     }
     setLoading(false);
   };

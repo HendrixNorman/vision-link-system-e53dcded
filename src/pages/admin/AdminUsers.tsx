@@ -24,6 +24,13 @@ interface Row {
 
 interface StudentLite { id: string; full_name: string; admission_no: string; }
 
+const COMMON_SUBJECTS = [
+  "Mathematics", "English Language", "Kiswahili", "Biology", "Chemistry", "Physics",
+  "History", "Geography", "Business Studies", "Agriculture", "Computer Studies",
+  "CRE", "IRE", "Hindu Religious Education", "French", "German", "Music", "Art & Design",
+  "Home Science", "Physical Education",
+];
+
 export default function AdminUsers() {
   const { user } = useAuth();
   const [rows, setRows] = useState<Row[]>([]);
@@ -41,6 +48,9 @@ export default function AdminUsers() {
   const [admissionNo, setAdmissionNo] = useState("");
   const [className, setClassName] = useState("");
   const [selectedChildren, setSelectedChildren] = useState<string[]>([]);
+  const [teacherSubjects, setTeacherSubjects] = useState<string[]>([]);
+  const [subjectPool, setSubjectPool] = useState<string[]>(COMMON_SUBJECTS);
+  const [newSubject, setNewSubject] = useState("");
 
   const load = async () => {
     setLoading(true);

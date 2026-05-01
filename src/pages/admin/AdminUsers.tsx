@@ -54,15 +54,18 @@ export default function AdminUsers() {
 
   const load = async () => {
     setLoading(true);
-    const [{ data: profiles }, { data: rolesData }, { data: studentsData }] = await Promise.all([
+    const [{ data: profiles }, { data: rolesData }, { data: studentsData }, { data: existingSubjects }] = await Promise.all([
       supabase.from("profiles").select("id, email, full_name").order("created_at", { ascending: false }),
       supabase.from("user_roles").select("user_id, role"),
       supabase.from("students").select("id, full_name, admission_no").order("full_name"),
+      supabase.from("student_subjects").select("subject"),
     ]);
     const roleMap = new Map<string, Role>();
     rolesData?.forEach((r) => roleMap.set(r.user_id, r.role as Role));
     setRows((profiles ?? []).map((p) => ({ ...p, role: roleMap.get(p.id) ?? null })));
     setStudents(studentsData ?? []);
+    const merged = Array.from(new Set([...COMMON_SUBJECTS, ...((existingSubjects ?? []).map((s) => s.subject))])).sort();
+    setSubjectPool(merged);
     setLoading(false);
   };
 
@@ -71,6 +74,7 @@ export default function AdminUsers() {
   const resetForm = () => {
     setEmail(""); setPassword(""); setFullName(""); setRole("student");
     setAdmissionNo(""); setClassName(""); setSelectedChildren([]);
+    setTeacherSubjects([]); setNewSubject("");
   };
 
   const generatePassword = () => {
@@ -83,6 +87,7 @@ export default function AdminUsers() {
   const handleCreate = async () => {
     if (!email || !password || !fullName) { toast.error("Email, password and name required"); return; }
     if (role === "student" && (!admissionNo || !className)) { toast.error("Admission no. and class required"); return; }
+    if (role === "teacher" && teacherSubjects.length === 0) { toast.error("Pick at least one subject this teacher teaches"); return; }
     setSubmitting(true);
     const { data, error } = await supabase.functions.invoke("admin-create-user", {
       body: {
@@ -90,6 +95,7 @@ export default function AdminUsers() {
         admission_no: role === "student" ? admissionNo : undefined,
         class_name: role === "student" ? className : undefined,
         child_student_ids: role === "parent" ? selectedChildren : undefined,
+        teacher_subjects: role === "teacher" ? teacherSubjects : undefined,
       },
     });
     setSubmitting(false);

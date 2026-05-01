@@ -276,14 +276,33 @@ export default function AdminResults() {
           <div className="space-y-4">
             <div className="space-y-2">
               <Label>Student</Label>
-              <Select value={studentId} onValueChange={setStudentId}>
-                <SelectTrigger><SelectValue placeholder="Select student" /></SelectTrigger>
-                <SelectContent>
-                  {students.map((s) => (
-                    <SelectItem key={s.id} value={s.id}>{s.full_name} ({s.admission_no})</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Popover open={studentPickerOpen} onOpenChange={setStudentPickerOpen}>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" role="combobox" className="w-full justify-between font-normal">
+                    {selectedStudent ? `${selectedStudent.full_name} (${selectedStudent.admission_no})` : "Select student"}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                  <Command>
+                    <CommandInput placeholder="Search by name or admission no..." />
+                    <CommandList className="max-h-72">
+                      <CommandEmpty>No students found.</CommandEmpty>
+                      <CommandGroup>
+                        {students.map((s) => (
+                          <CommandItem
+                            key={s.id}
+                            value={`${s.full_name} ${s.admission_no}`}
+                            onSelect={() => { setStudentId(s.id); setStudentPickerOpen(false); }}
+                          >
+                            {s.full_name} <span className="ml-2 text-xs text-muted-foreground">({s.admission_no})</span>
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
             <div className="grid sm:grid-cols-2 gap-3">
               <div className="space-y-2">

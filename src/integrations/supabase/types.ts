@@ -335,6 +335,27 @@ export type Database = {
         }
         Relationships: []
       }
+      teacher_subjects: {
+        Row: {
+          created_at: string
+          id: string
+          subject: string
+          teacher_user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          subject: string
+          teacher_user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          subject?: string
+          teacher_user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -370,6 +391,10 @@ export type Database = {
       }
       is_parent_of: {
         Args: { _parent: string; _student: string }
+        Returns: boolean
+      }
+      teacher_teaches: {
+        Args: { _subject: string; _user_id: string }
         Returns: boolean
       }
     }

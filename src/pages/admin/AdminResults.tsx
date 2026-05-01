@@ -343,21 +343,33 @@ export default function AdminResults() {
             </p>
           ) : (
             <div className="space-y-3">
-              <p className="text-xs text-muted-foreground">Enter a score (0–100) for each of the {editorSubjects.length} subjects.</p>
+              <p className="text-xs text-muted-foreground">
+                {isAdmin
+                  ? `Enter a score (0–100) for each of the ${editorSubjects.length} subjects.`
+                  : `You can enter scores for the subjects you teach. Other subjects are locked${myTeacherSubjects.length === 0 ? " — no subjects assigned to you yet, ask the admin" : ""}.`}
+              </p>
               <div className="grid sm:grid-cols-2 gap-3">
-                {editorRows.map((row, i) => (
-                  <div key={row.subject} className="space-y-1">
-                    <Label className="text-xs">{row.subject}</Label>
-                    <Input
-                      type="number" min={0} max={100} value={row.score}
-                      onChange={(e) => {
-                        const next = [...editorRows];
-                        next[i] = { ...row, score: e.target.value };
-                        setEditorRows(next);
-                      }}
-                    />
-                  </div>
-                ))}
+                {editorRows.map((row, i) => {
+                  const editable = canEditSubject(row.subject);
+                  return (
+                    <div key={row.subject} className="space-y-1">
+                      <Label className="text-xs flex items-center gap-1">
+                        {row.subject}
+                        {!editable && <Lock className="h-3 w-3 text-muted-foreground" />}
+                      </Label>
+                      <Input
+                        type="number" min={0} max={100} value={row.score}
+                        disabled={!editable}
+                        title={editable ? undefined : "You don't teach this subject"}
+                        onChange={(e) => {
+                          const next = [...editorRows];
+                          next[i] = { ...row, score: e.target.value };
+                          setEditorRows(next);
+                        }}
+                      />
+                    </div>
+                  );
+                })}
               </div>
               <div className="space-y-1">
                 <Label className="text-xs">Remarks (optional)</Label>

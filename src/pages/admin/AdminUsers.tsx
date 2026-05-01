@@ -183,6 +183,57 @@ export default function AdminUsers() {
                     )}
                   </div>
                 )}
+                {role === "teacher" && (
+                  <div className="space-y-2">
+                    <Label>Subjects this teacher teaches</Label>
+                    <p className="text-xs text-muted-foreground">They will only be able to enter or edit marks for these subjects.</p>
+                    <div className="max-h-44 overflow-y-auto border rounded-md divide-y">
+                      {subjectPool.map((subj) => (
+                        <label key={subj} className="flex items-center gap-2 p-2 cursor-pointer hover:bg-accent">
+                          <input
+                            type="checkbox"
+                            checked={teacherSubjects.includes(subj)}
+                            onChange={(e) => setTeacherSubjects((prev) => e.target.checked ? [...prev, subj] : prev.filter((x) => x !== subj))}
+                          />
+                          <span className="text-sm">{subj}</span>
+                        </label>
+                      ))}
+                    </div>
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Add a custom subject"
+                        value={newSubject}
+                        onChange={(e) => setNewSubject(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            const v = newSubject.trim();
+                            if (!v) return;
+                            if (!subjectPool.includes(v)) setSubjectPool((p) => [...p, v].sort());
+                            if (!teacherSubjects.includes(v)) setTeacherSubjects((p) => [...p, v]);
+                            setNewSubject("");
+                          }
+                        }}
+                      />
+                      <Button type="button" variant="outline" onClick={() => {
+                        const v = newSubject.trim();
+                        if (!v) return;
+                        if (!subjectPool.includes(v)) setSubjectPool((p) => [...p, v].sort());
+                        if (!teacherSubjects.includes(v)) setTeacherSubjects((p) => [...p, v]);
+                        setNewSubject("");
+                      }}>Add</Button>
+                    </div>
+                    {teacherSubjects.length > 0 && (
+                      <div className="flex flex-wrap gap-1 pt-1">
+                        {teacherSubjects.map((s) => (
+                          <Badge key={s} variant="secondary" className="cursor-pointer" onClick={() => setTeacherSubjects((p) => p.filter((x) => x !== s))}>
+                            {s} ✕
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>

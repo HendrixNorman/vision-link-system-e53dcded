@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageHeader } from "@/components/dashboard/StatCard";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,10 +9,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { Plus, Loader2, FileText, CheckCircle2, RotateCcw, Send, Trash2, Pencil } from "lucide-react";
+import { Plus, Loader2, FileText, CheckCircle2, RotateCcw, Send, Trash2, Pencil, ChevronsUpDown, Lock } from "lucide-react";
 
 type Status = "draft" | "submitted" | "confirmed";
 
@@ -33,14 +35,17 @@ const TERMS = ["First Term", "Second Term", "Third Term"];
 export default function AdminResults() {
   const { user, roles } = useAuth();
   const isAdmin = roles.includes("admin");
+  const isTeacher = roles.includes("teacher");
 
   const [sheets, setSheets] = useState<Sheet[]>([]);
   const [students, setStudents] = useState<{ id: string; full_name: string; admission_no: string }[]>([]);
+  const [myTeacherSubjects, setMyTeacherSubjects] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
   // create dialog
   const [createOpen, setCreateOpen] = useState(false);
   const [studentId, setStudentId] = useState("");
+  const [studentPickerOpen, setStudentPickerOpen] = useState(false);
   const [term, setTerm] = useState("First Term");
   const [year, setYear] = useState(new Date().getFullYear().toString());
   const [creating, setCreating] = useState(false);
@@ -52,22 +57,36 @@ export default function AdminResults() {
   const [editorRemarks, setEditorRemarks] = useState("");
   const [savingEditor, setSavingEditor] = useState(false);
 
+  const canEditSubject = (subject: string) => isAdmin || myTeacherSubjects.includes(subject);
+
   const load = async () => {
     setLoading(true);
-    const [{ data: rs }, { data: ss }] = await Promise.all([
+    const promises: Promise<unknown>[] = [
       supabase
         .from("result_sheets")
         .select("*, students(full_name, admission_no, class_name)")
         .order("created_at", { ascending: false })
         .limit(200),
       supabase.from("students").select("id, full_name, admission_no").order("full_name"),
-    ]);
-    setSheets((rs ?? []) as Sheet[]);
+    ];
+    if (isTeacher && user?.id) {
+      promises.push(supabase.from("teacher_subjects").select("subject").eq("teacher_user_id", user.id));
+    }
+    const results = await Promise.all(promises) as Array<{ data: unknown }>;
+    const rs = results[0].data as Sheet[] | null;
+    const ss = results[1].data as { id: string; full_name: string; admission_no: string }[] | null;
+    setSheets(rs ?? []);
     setStudents(ss ?? []);
+    if (isTeacher && results[2]) {
+      const ts = results[2].data as { subject: string }[] | null;
+      setMyTeacherSubjects((ts ?? []).map((r) => r.subject));
+    }
     setLoading(false);
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [user?.id, isTeacher]);
+
+  const selectedStudent = useMemo(() => students.find((s) => s.id === studentId), [students, studentId]);
 
   const handleCreate = async () => {
     if (!studentId) { toast.error("Pick a student"); return; }

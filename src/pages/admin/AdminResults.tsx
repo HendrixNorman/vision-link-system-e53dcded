@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PageHeader } from "@/components/dashboard/StatCard";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,10 +9,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { Plus, Loader2, FileText, CheckCircle2, RotateCcw, Send, Trash2, Pencil } from "lucide-react";
+import { Plus, Loader2, FileText, CheckCircle2, RotateCcw, Send, Trash2, Pencil, ChevronsUpDown, Lock } from "lucide-react";
 
 type Status = "draft" | "submitted" | "confirmed";
 
@@ -33,14 +35,17 @@ const TERMS = ["First Term", "Second Term", "Third Term"];
 export default function AdminResults() {
   const { user, roles } = useAuth();
   const isAdmin = roles.includes("admin");
+  const isTeacher = roles.includes("teacher");
 
   const [sheets, setSheets] = useState<Sheet[]>([]);
   const [students, setStudents] = useState<{ id: string; full_name: string; admission_no: string }[]>([]);
+  const [myTeacherSubjects, setMyTeacherSubjects] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
   // create dialog
   const [createOpen, setCreateOpen] = useState(false);
   const [studentId, setStudentId] = useState("");
+  const [studentPickerOpen, setStudentPickerOpen] = useState(false);
   const [term, setTerm] = useState("First Term");
   const [year, setYear] = useState(new Date().getFullYear().toString());
   const [creating, setCreating] = useState(false);
@@ -51,6 +56,8 @@ export default function AdminResults() {
   const [editorRows, setEditorRows] = useState<ScoreRow[]>([]);
   const [editorRemarks, setEditorRemarks] = useState("");
   const [savingEditor, setSavingEditor] = useState(false);
+
+  const canEditSubject = (subject: string) => isAdmin || myTeacherSubjects.includes(subject);
 
   const load = async () => {
     setLoading(true);
@@ -64,10 +71,18 @@ export default function AdminResults() {
     ]);
     setSheets((rs ?? []) as Sheet[]);
     setStudents(ss ?? []);
+    if (isTeacher && user?.id) {
+      const { data: ts } = await supabase.from("teacher_subjects").select("subject").eq("teacher_user_id", user.id);
+      setMyTeacherSubjects((ts ?? []).map((r) => r.subject));
+    } else {
+      setMyTeacherSubjects([]);
+    }
     setLoading(false);
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [user?.id, isTeacher]);
+
+  const selectedStudent = useMemo(() => students.find((s) => s.id === studentId), [students, studentId]);
 
   const handleCreate = async () => {
     if (!studentId) { toast.error("Pick a student"); return; }
@@ -110,18 +125,27 @@ export default function AdminResults() {
 
   const saveScores = async (alsoSubmit: boolean) => {
     if (!editor) return;
-    // validate
-    for (const r of editorRows) {
+    const editableRows = editorRows.filter((r) => canEditSubject(r.subject) && r.score !== "");
+    // validate only the rows the user can edit and has filled
+    for (const r of editableRows) {
       const n = parseFloat(r.score);
       if (isNaN(n) || n < 0 || n > 100) {
         toast.error(`Invalid score for ${r.subject} (must be 0–100)`);
         return;
       }
     }
+    if (alsoSubmit) {
+      // before submission, every subject (including locked ones) must have a score
+      const missing = editorRows.filter((r) => r.score === "" || isNaN(parseFloat(r.score)));
+      if (missing.length > 0) {
+        toast.error(`Cannot submit: missing scores for ${missing.map((m) => m.subject).join(", ")}. Ask the relevant teacher to fill them in.`);
+        return;
+      }
+    }
     setSavingEditor(true);
 
-    // upsert each score
-    for (const r of editorRows) {
+    // upsert only the rows the user is allowed to edit
+    for (const r of editableRows) {
       const score = parseFloat(r.score);
       if (r.id) {
         const { error } = await supabase.from("results").update({ score }).eq("id", r.id);
@@ -252,14 +276,33 @@ export default function AdminResults() {
           <div className="space-y-4">
             <div className="space-y-2">
               <Label>Student</Label>
-              <Select value={studentId} onValueChange={setStudentId}>
-                <SelectTrigger><SelectValue placeholder="Select student" /></SelectTrigger>
-                <SelectContent>
-                  {students.map((s) => (
-                    <SelectItem key={s.id} value={s.id}>{s.full_name} ({s.admission_no})</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Popover open={studentPickerOpen} onOpenChange={setStudentPickerOpen}>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" role="combobox" className="w-full justify-between font-normal">
+                    {selectedStudent ? `${selectedStudent.full_name} (${selectedStudent.admission_no})` : "Select student"}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                  <Command>
+                    <CommandInput placeholder="Search by name or admission no..." />
+                    <CommandList className="max-h-72">
+                      <CommandEmpty>No students found.</CommandEmpty>
+                      <CommandGroup>
+                        {students.map((s) => (
+                          <CommandItem
+                            key={s.id}
+                            value={`${s.full_name} ${s.admission_no}`}
+                            onSelect={() => { setStudentId(s.id); setStudentPickerOpen(false); }}
+                          >
+                            {s.full_name} <span className="ml-2 text-xs text-muted-foreground">({s.admission_no})</span>
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
             <div className="grid sm:grid-cols-2 gap-3">
               <div className="space-y-2">
@@ -300,21 +343,33 @@ export default function AdminResults() {
             </p>
           ) : (
             <div className="space-y-3">
-              <p className="text-xs text-muted-foreground">Enter a score (0–100) for each of the {editorSubjects.length} subjects.</p>
+              <p className="text-xs text-muted-foreground">
+                {isAdmin
+                  ? `Enter a score (0–100) for each of the ${editorSubjects.length} subjects.`
+                  : `You can enter scores for the subjects you teach. Other subjects are locked${myTeacherSubjects.length === 0 ? " — no subjects assigned to you yet, ask the admin" : ""}.`}
+              </p>
               <div className="grid sm:grid-cols-2 gap-3">
-                {editorRows.map((row, i) => (
-                  <div key={row.subject} className="space-y-1">
-                    <Label className="text-xs">{row.subject}</Label>
-                    <Input
-                      type="number" min={0} max={100} value={row.score}
-                      onChange={(e) => {
-                        const next = [...editorRows];
-                        next[i] = { ...row, score: e.target.value };
-                        setEditorRows(next);
-                      }}
-                    />
-                  </div>
-                ))}
+                {editorRows.map((row, i) => {
+                  const editable = canEditSubject(row.subject);
+                  return (
+                    <div key={row.subject} className="space-y-1">
+                      <Label className="text-xs flex items-center gap-1">
+                        {row.subject}
+                        {!editable && <Lock className="h-3 w-3 text-muted-foreground" />}
+                      </Label>
+                      <Input
+                        type="number" min={0} max={100} value={row.score}
+                        disabled={!editable}
+                        title={editable ? undefined : "You don't teach this subject"}
+                        onChange={(e) => {
+                          const next = [...editorRows];
+                          next[i] = { ...row, score: e.target.value };
+                          setEditorRows(next);
+                        }}
+                      />
+                    </div>
+                  );
+                })}
               </div>
               <div className="space-y-1">
                 <Label className="text-xs">Remarks (optional)</Label>

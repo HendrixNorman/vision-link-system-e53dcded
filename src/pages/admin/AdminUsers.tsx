@@ -24,6 +24,13 @@ interface Row {
 
 interface StudentLite { id: string; full_name: string; admission_no: string; }
 
+const COMMON_SUBJECTS = [
+  "Mathematics", "English Language", "Kiswahili", "Biology", "Chemistry", "Physics",
+  "History", "Geography", "Business Studies", "Agriculture", "Computer Studies",
+  "CRE", "IRE", "Hindu Religious Education", "French", "German", "Music", "Art & Design",
+  "Home Science", "Physical Education",
+];
+
 export default function AdminUsers() {
   const { user } = useAuth();
   const [rows, setRows] = useState<Row[]>([]);
@@ -41,18 +48,24 @@ export default function AdminUsers() {
   const [admissionNo, setAdmissionNo] = useState("");
   const [className, setClassName] = useState("");
   const [selectedChildren, setSelectedChildren] = useState<string[]>([]);
+  const [teacherSubjects, setTeacherSubjects] = useState<string[]>([]);
+  const [subjectPool, setSubjectPool] = useState<string[]>(COMMON_SUBJECTS);
+  const [newSubject, setNewSubject] = useState("");
 
   const load = async () => {
     setLoading(true);
-    const [{ data: profiles }, { data: rolesData }, { data: studentsData }] = await Promise.all([
+    const [{ data: profiles }, { data: rolesData }, { data: studentsData }, { data: existingSubjects }] = await Promise.all([
       supabase.from("profiles").select("id, email, full_name").order("created_at", { ascending: false }),
       supabase.from("user_roles").select("user_id, role"),
       supabase.from("students").select("id, full_name, admission_no").order("full_name"),
+      supabase.from("student_subjects").select("subject"),
     ]);
     const roleMap = new Map<string, Role>();
     rolesData?.forEach((r) => roleMap.set(r.user_id, r.role as Role));
     setRows((profiles ?? []).map((p) => ({ ...p, role: roleMap.get(p.id) ?? null })));
     setStudents(studentsData ?? []);
+    const merged = Array.from(new Set([...COMMON_SUBJECTS, ...((existingSubjects ?? []).map((s) => s.subject))])).sort();
+    setSubjectPool(merged);
     setLoading(false);
   };
 
@@ -61,6 +74,7 @@ export default function AdminUsers() {
   const resetForm = () => {
     setEmail(""); setPassword(""); setFullName(""); setRole("student");
     setAdmissionNo(""); setClassName(""); setSelectedChildren([]);
+    setTeacherSubjects([]); setNewSubject("");
   };
 
   const generatePassword = () => {
@@ -73,6 +87,7 @@ export default function AdminUsers() {
   const handleCreate = async () => {
     if (!email || !password || !fullName) { toast.error("Email, password and name required"); return; }
     if (role === "student" && (!admissionNo || !className)) { toast.error("Admission no. and class required"); return; }
+    if (role === "teacher" && teacherSubjects.length === 0) { toast.error("Pick at least one subject this teacher teaches"); return; }
     setSubmitting(true);
     const { data, error } = await supabase.functions.invoke("admin-create-user", {
       body: {
@@ -80,6 +95,7 @@ export default function AdminUsers() {
         admission_no: role === "student" ? admissionNo : undefined,
         class_name: role === "student" ? className : undefined,
         child_student_ids: role === "parent" ? selectedChildren : undefined,
+        teacher_subjects: role === "teacher" ? teacherSubjects : undefined,
       },
     });
     setSubmitting(false);
@@ -162,6 +178,57 @@ export default function AdminUsers() {
                             />
                             <span className="text-sm">{s.full_name} <span className="text-muted-foreground">({s.admission_no})</span></span>
                           </label>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+                {role === "teacher" && (
+                  <div className="space-y-2">
+                    <Label>Subjects this teacher teaches</Label>
+                    <p className="text-xs text-muted-foreground">They will only be able to enter or edit marks for these subjects.</p>
+                    <div className="max-h-44 overflow-y-auto border rounded-md divide-y">
+                      {subjectPool.map((subj) => (
+                        <label key={subj} className="flex items-center gap-2 p-2 cursor-pointer hover:bg-accent">
+                          <input
+                            type="checkbox"
+                            checked={teacherSubjects.includes(subj)}
+                            onChange={(e) => setTeacherSubjects((prev) => e.target.checked ? [...prev, subj] : prev.filter((x) => x !== subj))}
+                          />
+                          <span className="text-sm">{subj}</span>
+                        </label>
+                      ))}
+                    </div>
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Add a custom subject"
+                        value={newSubject}
+                        onChange={(e) => setNewSubject(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            const v = newSubject.trim();
+                            if (!v) return;
+                            if (!subjectPool.includes(v)) setSubjectPool((p) => [...p, v].sort());
+                            if (!teacherSubjects.includes(v)) setTeacherSubjects((p) => [...p, v]);
+                            setNewSubject("");
+                          }
+                        }}
+                      />
+                      <Button type="button" variant="outline" onClick={() => {
+                        const v = newSubject.trim();
+                        if (!v) return;
+                        if (!subjectPool.includes(v)) setSubjectPool((p) => [...p, v].sort());
+                        if (!teacherSubjects.includes(v)) setTeacherSubjects((p) => [...p, v]);
+                        setNewSubject("");
+                      }}>Add</Button>
+                    </div>
+                    {teacherSubjects.length > 0 && (
+                      <div className="flex flex-wrap gap-1 pt-1">
+                        {teacherSubjects.map((s) => (
+                          <Badge key={s} variant="secondary" className="cursor-pointer" onClick={() => setTeacherSubjects((p) => p.filter((x) => x !== s))}>
+                            {s} ✕
+                          </Badge>
                         ))}
                       </div>
                     )}

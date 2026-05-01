@@ -18,6 +18,8 @@ interface Payload {
   class_name?: string;
   // parent fields (when role === 'parent')
   child_student_ids?: string[];
+  // teacher fields (when role === 'teacher')
+  teacher_subjects?: string[];
 }
 
 Deno.serve(async (req) => {
@@ -62,7 +64,7 @@ Deno.serve(async (req) => {
     }
 
     const body = (await req.json()) as Payload;
-    const { email, password, full_name, role, admission_no, class_name, child_student_ids } = body;
+    const { email, password, full_name, role, admission_no, class_name, child_student_ids, teacher_subjects } = body;
 
     if (!email || !password || !full_name || !role) {
       return new Response(JSON.stringify({ error: 'email, password, full_name, role required' }), {
@@ -117,6 +119,19 @@ Deno.serve(async (req) => {
         return new Response(JSON.stringify({ error: 'Student record failed: ' + stuErr.message }), {
           status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
+      }
+    }
+
+    if (role === 'teacher' && teacher_subjects?.length) {
+      const cleaned = Array.from(new Set(teacher_subjects.map((s) => s.trim()).filter(Boolean)));
+      if (cleaned.length) {
+        const rows = cleaned.map((subject) => ({ teacher_user_id: newUserId, subject }));
+        const { error: tsErr } = await admin.from('teacher_subjects').insert(rows);
+        if (tsErr) {
+          return new Response(JSON.stringify({ error: 'Teacher subjects failed: ' + tsErr.message }), {
+            status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
       }
     }
 

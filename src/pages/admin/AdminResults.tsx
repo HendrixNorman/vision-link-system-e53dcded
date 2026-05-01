@@ -125,18 +125,27 @@ export default function AdminResults() {
 
   const saveScores = async (alsoSubmit: boolean) => {
     if (!editor) return;
-    // validate
-    for (const r of editorRows) {
+    const editableRows = editorRows.filter((r) => canEditSubject(r.subject) && r.score !== "");
+    // validate only the rows the user can edit and has filled
+    for (const r of editableRows) {
       const n = parseFloat(r.score);
       if (isNaN(n) || n < 0 || n > 100) {
         toast.error(`Invalid score for ${r.subject} (must be 0–100)`);
         return;
       }
     }
+    if (alsoSubmit) {
+      // before submission, every subject (including locked ones) must have a score
+      const missing = editorRows.filter((r) => r.score === "" || isNaN(parseFloat(r.score)));
+      if (missing.length > 0) {
+        toast.error(`Cannot submit: missing scores for ${missing.map((m) => m.subject).join(", ")}. Ask the relevant teacher to fill them in.`);
+        return;
+      }
+    }
     setSavingEditor(true);
 
-    // upsert each score
-    for (const r of editorRows) {
+    // upsert only the rows the user is allowed to edit
+    for (const r of editableRows) {
       const score = parseFloat(r.score);
       if (r.id) {
         const { error } = await supabase.from("results").update({ score }).eq("id", r.id);

@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useClasses } from "@/hooks/useClasses";
 import { toast } from "sonner";
 import { Plus, Loader2, Trash2, Users as UsersIcon } from "lucide-react";
 
@@ -33,6 +34,7 @@ const COMMON_SUBJECTS = [
 
 export default function AdminUsers() {
   const { user } = useAuth();
+  const { classes } = useClasses();
   const [rows, setRows] = useState<Row[]>([]);
   const [students, setStudents] = useState<StudentLite[]>([]);
   const [loading, setLoading] = useState(true);
@@ -159,7 +161,15 @@ export default function AdminUsers() {
                 {role === "student" && (
                   <div className="grid sm:grid-cols-2 gap-3">
                     <div className="space-y-2"><Label>Admission no.</Label><Input value={admissionNo} onChange={(e) => setAdmissionNo(e.target.value)} /></div>
-                    <div className="space-y-2"><Label>Class</Label><Input value={className} onChange={(e) => setClassName(e.target.value)} placeholder="e.g. JSS 2A" /></div>
+                    <div className="space-y-2">
+                      <Label>Class</Label>
+                      <Select value={className} onValueChange={setClassName}>
+                        <SelectTrigger><SelectValue placeholder={classes.length ? "Select class" : "Create classes first"} /></SelectTrigger>
+                        <SelectContent>
+                          {classes.map((c) => <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                 )}
                 {role === "parent" && (

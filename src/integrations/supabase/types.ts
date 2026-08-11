@@ -89,6 +89,33 @@ export type Database = {
         }
         Relationships: []
       }
+      classes: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          level: string | null
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          level?: string | null
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          level?: string | null
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       parent_students: {
         Row: {
           created_at: string

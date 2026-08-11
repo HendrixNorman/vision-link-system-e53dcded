@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth, AppRole, primaryRole } from "@/contexts/AuthContext";
 import { SchoolLogo } from "./SchoolLogo";
 import { Button } from "@/components/ui/button";
-import { LogOut, Menu, X, LayoutDashboard, Users, GraduationCap, Megaphone, FileText, BookOpen, Baby, KeyRound, FolderOpen } from "lucide-react";
+import { LogOut, Menu, X, LayoutDashboard, Users, GraduationCap, Megaphone, FileText, BookOpen, Baby, KeyRound, FolderOpen, School } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ChangePasswordDialog } from "./ChangePasswordDialog";
 import { ThemeToggle } from "./ThemeToggle";
@@ -15,6 +15,7 @@ const navByRole: Record<AppRole, NavItem[]> = {
   admin: [
     { to: "/admin", label: "Overview", icon: LayoutDashboard },
     { to: "/admin/users", label: "Users", icon: Users },
+    { to: "/admin/classes", label: "Classes", icon: School },
     { to: "/admin/students", label: "Students", icon: GraduationCap },
     { to: "/admin/results", label: "Results", icon: FileText },
     { to: "/admin/assignments", label: "Assignments", icon: FolderOpen },

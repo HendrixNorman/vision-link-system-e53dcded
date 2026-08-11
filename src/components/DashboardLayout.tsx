@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth, AppRole, primaryRole } from "@/contexts/AuthContext";
 import { SchoolLogo } from "./SchoolLogo";
 import { Button } from "@/components/ui/button";
-import { LogOut, Menu, X, LayoutDashboard, Users, GraduationCap, Megaphone, FileText, BookOpen, Baby, KeyRound, FolderOpen } from "lucide-react";
+import { LogOut, Menu, X, LayoutDashboard, Users, GraduationCap, Megaphone, FileText, BookOpen, Baby, KeyRound, FolderOpen, School } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ChangePasswordDialog } from "./ChangePasswordDialog";
 import { ThemeToggle } from "./ThemeToggle";

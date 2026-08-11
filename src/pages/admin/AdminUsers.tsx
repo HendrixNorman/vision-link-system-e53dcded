@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useClasses } from "@/hooks/useClasses";
 import { toast } from "sonner";
 import { Plus, Loader2, Trash2, Users as UsersIcon } from "lucide-react";
 

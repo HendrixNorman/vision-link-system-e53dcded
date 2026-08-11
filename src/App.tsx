@@ -13,6 +13,7 @@ import NotFound from "./pages/NotFound";
 import AdminOverview from "./pages/admin/AdminOverview";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminStudents from "./pages/admin/AdminStudents";
+import AdminClasses from "./pages/admin/AdminClasses";
 import AdminResults from "./pages/admin/AdminResults";
 import AdminAnnouncements from "./pages/admin/AdminAnnouncements";
 

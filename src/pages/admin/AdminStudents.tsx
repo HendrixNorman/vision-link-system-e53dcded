@@ -22,8 +22,8 @@ interface ImportResult {
 }
 
 export default function AdminStudents() {
-  const { role } = useAuth();
-  const isAdmin = role === "admin";
+  const { roles } = useAuth();
+  const isAdmin = roles.includes("admin");
   const { classes } = useClasses();
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);

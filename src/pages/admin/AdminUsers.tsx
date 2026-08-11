@@ -34,6 +34,7 @@ const COMMON_SUBJECTS = [
 
 export default function AdminUsers() {
   const { user } = useAuth();
+  const { classes } = useClasses();
   const [rows, setRows] = useState<Row[]>([]);
   const [students, setStudents] = useState<StudentLite[]>([]);
   const [loading, setLoading] = useState(true);

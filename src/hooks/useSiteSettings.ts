@@ -6,6 +6,9 @@ export interface SiteSettings {
   logo_url: string | null;
   hero_url: string | null;
   school_name: string | null;
+  theme_hue: number | null;
+  theme_saturation: number | null;
+  theme_accent_hue: number | null;
 }
 
 const DEFAULT_NAME = "School Portal";
@@ -17,7 +20,7 @@ export function useSiteSettings() {
   const fetchSettings = async () => {
     const { data } = await supabase
       .from("site_settings")
-      .select("id, logo_url, hero_url, school_name")
+      .select("id, logo_url, hero_url, school_name, theme_hue, theme_saturation, theme_accent_hue")
       .limit(1)
       .maybeSingle();
     setSettings(data ?? null);

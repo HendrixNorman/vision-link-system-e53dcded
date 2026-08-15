@@ -282,6 +282,10 @@ export type Database = {
           id: string
           logo_url: string | null
           school_name: string | null
+          theme_accent_hue: number
+          theme_hue: number
+          theme_preset: string | null
+          theme_saturation: number
           updated_at: string
           updated_by: string | null
         }
@@ -290,6 +294,10 @@ export type Database = {
           id?: string
           logo_url?: string | null
           school_name?: string | null
+          theme_accent_hue?: number
+          theme_hue?: number
+          theme_preset?: string | null
+          theme_saturation?: number
           updated_at?: string
           updated_by?: string | null
         }
@@ -298,6 +306,10 @@ export type Database = {
           id?: string
           logo_url?: string | null
           school_name?: string | null
+          theme_accent_hue?: number
+          theme_hue?: number
+          theme_preset?: string | null
+          theme_saturation?: number
           updated_at?: string
           updated_by?: string | null
         }

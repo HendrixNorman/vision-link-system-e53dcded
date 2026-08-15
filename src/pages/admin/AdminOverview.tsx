@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Users, GraduationCap, FileText, Megaphone } from "lucide-react";
 import { Link } from "react-router-dom";
 import { AppearanceCard } from "@/components/admin/AppearanceCard";
+import { BrandColorCard } from "@/components/admin/BrandColorCard";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 export default function AdminOverview() {
@@ -90,6 +91,7 @@ export default function AdminOverview() {
       </div>
 
       <div className="mt-6">
+        <BrandColorCard />
         <AppearanceCard />
       </div>
     </DashboardLayout>

@@ -86,7 +86,7 @@ export function AppearanceCard() {
   const logoSrc = settings?.logo_url || defaultLogo;
 
   return (
-    <Card className="shadow-soft">
+    <Card className="glass-panel border-0 rounded-2xl">
       <CardContent className="p-6">
         <div className="flex items-center gap-2 mb-1">
           <ImageIcon className="h-5 w-5 text-primary" />

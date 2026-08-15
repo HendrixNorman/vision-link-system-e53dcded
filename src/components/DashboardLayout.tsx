@@ -63,9 +63,11 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
   const tail = parts.length > 1 ? parts[parts.length - 1] : "";
 
   return (
-    <div className="min-h-screen flex w-full bg-background">
+    <div className="relative min-h-screen flex w-full bg-background overflow-hidden">
+      <div className="orb h-72 w-72 -top-24 right-0 opacity-25" />
+      <div className="orb h-80 w-80 bottom-0 left-1/3 opacity-20" />
       {/* Mobile top bar */}
-      <header className="lg:hidden fixed top-0 inset-x-0 z-40 h-14 border-b bg-card flex items-center justify-between px-4">
+      <header className="lg:hidden fixed top-0 inset-x-0 z-40 h-14 glass-nav flex items-center justify-between px-4">
         <SchoolLogo />
         <div className="flex items-center gap-1">
           <ThemeToggle />
@@ -78,7 +80,7 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed lg:sticky top-0 z-30 h-screen w-64 shrink-0 bg-sidebar text-sidebar-foreground transition-transform duration-300 lg:translate-x-0",
+          "fixed lg:sticky top-0 z-30 h-screen w-64 shrink-0 bg-sidebar/85 backdrop-blur-2xl border-r border-sidebar-border/60 text-sidebar-foreground transition-transform duration-300 lg:translate-x-0",
           open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
@@ -106,9 +108,9 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
               onClick={() => setOpen(false)}
               className={({ isActive }) =>
                 cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-smooth",
+                  "flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium transition-spring",
                   isActive
-                    ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-soft"
+                    ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-glow"
                     : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                 )
               }

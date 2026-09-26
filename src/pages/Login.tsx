@@ -39,11 +39,8 @@ export default function Login() {
 
   return (
     <div className="relative min-h-screen grid lg:grid-cols-2 bg-background overflow-hidden">
-      <div className="orb h-96 w-96 -top-32 right-0 opacity-30" />
-      <div className="orb h-80 w-80 -bottom-24 left-1/3 opacity-20" />
       {/* Left brand panel */}
       <div className="hidden lg:flex relative overflow-hidden gradient-hero p-12 flex-col justify-between">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,hsl(0_0%_100%/0.22),transparent_55%)]" />
         <SchoolLogo className="text-primary-foreground [&_*]:text-primary-foreground" />
         <div className="relative text-primary-foreground">
           <h2 className="text-4xl font-display font-bold leading-tight">

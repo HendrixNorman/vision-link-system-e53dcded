@@ -23,29 +23,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const fetchRoles = async (uid: string) => {
-    const { data } = await supabase.from("user_roles").select("role").eq("user_id", uid);
-    setRoles((data?.map((r) => r.role) ?? []) as AppRole[]);
+    try {
+      const { data, error } = await supabase.from("user_roles").select("role").eq("user_id", uid);
+      if (!error) setRoles((data?.map((r) => r.role) ?? []) as AppRole[]);
+    } catch {
+      /* keep previous roles on transient failure */
+    }
   };
 
   useEffect(() => {
+    let active = true;
+    let lastUid: string | null = null;
+
+    // Single source of truth: INITIAL_SESSION fires on load, avoiding lock races with getSession.
     const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
+      if (!active) return;
       setSession(s);
       setUser(s?.user ?? null);
-      if (s?.user) {
-        setTimeout(() => fetchRoles(s.user.id), 0);
-      } else {
+      const uid = s?.user?.id ?? null;
+      if (!uid) {
+        lastUid = null;
         setRoles([]);
+        setLoading(false);
+        return;
       }
+      if (uid === lastUid) {
+        setLoading(false);
+        return;
+      }
+      lastUid = uid;
+      // Defer DB call outside the auth callback to avoid auth lock deadlocks.
+      setTimeout(() => {
+        fetchRoles(uid).finally(() => active && setLoading(false));
+      }, 0);
     });
 
-    supabase.auth.getSession().then(({ data: { session: s } }) => {
-      setSession(s);
-      setUser(s?.user ?? null);
-      if (s?.user) fetchRoles(s.user.id).finally(() => setLoading(false));
-      else setLoading(false);
-    });
-
-    return () => sub.subscription.unsubscribe();
+    return () => {
+      active = false;
+      sub.subscription.unsubscribe();
+    };
   }, []);
 
   const signIn = async (email: string, password: string) => {

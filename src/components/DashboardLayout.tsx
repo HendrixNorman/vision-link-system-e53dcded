@@ -64,8 +64,6 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="relative min-h-screen flex w-full bg-background overflow-hidden">
-      <div className="orb h-72 w-72 -top-24 right-0 opacity-25" />
-      <div className="orb h-80 w-80 bottom-0 left-1/3 opacity-20" />
       {/* Mobile top bar */}
       <header className="lg:hidden fixed top-0 inset-x-0 z-40 h-14 glass-nav flex items-center justify-between px-4">
         <SchoolLogo />

@@ -38,8 +38,6 @@ export default function Landing() {
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 gradient-cream pointer-events-none" />
-        <div className="orb h-80 w-80 -top-20 -left-10" />
-        <div className="orb h-96 w-96 top-40 right-0 opacity-40" />
         <div className="container mx-auto relative grid lg:grid-cols-2 gap-10 lg:gap-16 py-12 sm:py-20 lg:py-28 items-center">
           <div className="animate-fade-in">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-accent-foreground text-xs font-semibold mb-6">
@@ -102,7 +100,6 @@ export default function Landing() {
       <section className="py-16">
         <div className="container mx-auto">
           <div className="relative overflow-hidden rounded-[2rem] gradient-hero p-8 sm:p-14 text-center shadow-elegant">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_-20%,hsl(0_0%_100%/0.25),transparent_60%)]" />
             <h2 className="text-3xl sm:text-4xl font-display font-bold text-primary-foreground">
               Ready to bring your school online?
             </h2>
